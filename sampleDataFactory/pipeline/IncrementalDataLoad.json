@@ -77,7 +77,16 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": [],
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "dbo.data_source_table"
+					},
+					{
+						"name": "Destination",
+						"value": "mycontainer/mydirectory/@{CONCAT('Incremental-', pipeline().RunId, '.txt')}"
+					}
+				],
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
