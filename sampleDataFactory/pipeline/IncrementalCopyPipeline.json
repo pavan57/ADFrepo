@@ -8,9 +8,13 @@
 				"dependsOn": [],
 				"userProperties": [
 					{
-						"name": "tableList"
+						"name": "tableList",
+						"value": "{pavan,kunal}"
 					}
-				]
+				],
+				"typeProperties": {
+					"isSequential": true
+				}
 			}
 		],
 		"annotations": []
