@@ -7,9 +7,13 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "sampleadf108"
 		},
-		"AzureSQLDatabaseLinkedService_connectionString": {
+		"AzureSQLDatabaseLinkedService_Sink_connectionString": {
 			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureSQLDatabaseLinkedService'"
+			"metadata": "Secure string for 'connectionString' of 'AzureSQLDatabaseLinkedService_Sink'"
+		},
+		"SqlServerLinkedService_source_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'SqlServerLinkedService_source'"
 		},
 		"AzureStorageLinkedService_connectionString": {
 			"type": "secureString",
@@ -42,8 +46,11 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
-					"AzureSQLDatabaseLinkedService_connectionString": {
-						"value": "[parameters('AzureSQLDatabaseLinkedService_connectionString')]"
+					"AzureSQLDatabaseLinkedService_Sink_connectionString": {
+						"value": "[parameters('AzureSQLDatabaseLinkedService_Sink_connectionString')]"
+					},
+					"SqlServerLinkedService_source_connectionString": {
+						"value": "[parameters('SqlServerLinkedService_source_connectionString')]"
 					},
 					"AzureStorageLinkedService_connectionString": {
 						"value": "[parameters('AzureStorageLinkedService_connectionString')]"
