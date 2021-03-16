@@ -6,13 +6,11 @@
 				"name": "IterateSQLTables",
 				"type": "ForEach",
 				"dependsOn": [],
-				"userProperties": [],
-				"typeProperties": {
-					"items": {
-						"value": "@pipeline().parameters.tableList",
-						"type": "Expression"
+				"userProperties": [
+					{
+						"name": "tableList"
 					}
-				}
+				]
 			}
 		],
 		"annotations": []
