@@ -170,7 +170,7 @@
 			}
 		],
 		"parameters": {
-			"tableList ": {
+			"tableList": {
 				"type": "array"
 			}
 		},
