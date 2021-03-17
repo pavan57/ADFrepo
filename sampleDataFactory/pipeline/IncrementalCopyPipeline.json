@@ -1,6 +1,22 @@
 {
 	"name": "IncrementalCopyPipeline",
 	"properties": {
+		"parameters": {
+			"tableList ": {
+				"type": "array"
+			},
+			"source-username": {
+				"type": "string",
+				"defaultValue": "admin1234"
+			},
+			"source-password": {
+				"type": "securestring",
+				"defaultValue": {
+					"type": "SecureString",
+					"value": "**********"
+				}
+			}
+		},
 		"annotations": []
 	}
 }
