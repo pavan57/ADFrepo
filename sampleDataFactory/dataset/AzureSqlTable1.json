@@ -1,0 +1,15 @@
+{
+	"name": "AzureSqlTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sqlServerLinkedService_Source",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "MultiTable_IncrementalLoad"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
