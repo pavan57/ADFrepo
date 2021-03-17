@@ -7,13 +7,13 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "sampleadf108"
 		},
-		"AzureSQLDatabaseLinkedService_Sink_connectionString": {
+		"sqlServerLinkedService_Source_connectionString": {
 			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureSQLDatabaseLinkedService_Sink'"
+			"metadata": "Secure string for 'connectionString' of 'sqlServerLinkedService_Source'"
 		},
-		"SqlServerLinkedService_source_connectionString": {
+		"AzureSqlDatabaseLinkedService_Sink_connectionString": {
 			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'SqlServerLinkedService_source'"
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabaseLinkedService_Sink'"
 		},
 		"containerUri": {
 			"type": "string",
@@ -42,11 +42,11 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
-					"AzureSQLDatabaseLinkedService_Sink_connectionString": {
-						"value": "[parameters('AzureSQLDatabaseLinkedService_Sink_connectionString')]"
+					"sqlServerLinkedService_Source_connectionString": {
+						"value": "[parameters('sqlServerLinkedService_Source_connectionString')]"
 					},
-					"SqlServerLinkedService_source_connectionString": {
-						"value": "[parameters('SqlServerLinkedService_source_connectionString')]"
+					"AzureSqlDatabaseLinkedService_Sink_connectionString": {
+						"value": "[parameters('AzureSqlDatabaseLinkedService_Sink_connectionString')]"
 					}
 				}
 			},

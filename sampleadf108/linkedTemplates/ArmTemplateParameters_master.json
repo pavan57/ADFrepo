@@ -5,10 +5,10 @@
 		"factoryName": {
 			"value": "sampleadf108"
 		},
-		"AzureSQLDatabaseLinkedService_Sink_connectionString": {
+		"sqlServerLinkedService_Source_connectionString": {
 			"value": ""
 		},
-		"SqlServerLinkedService_source_connectionString": {
+		"AzureSqlDatabaseLinkedService_Sink_connectionString": {
 			"value": ""
 		},
 		"containerUri": {
