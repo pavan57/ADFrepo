@@ -8,9 +8,6 @@
 		"AzureSQLDatabaseLinkedService_Sink_connectionString": {
 			"value": ""
 		},
-		"AzureStorageLinkedService_connectionString": {
-			"value": ""
-		},
 		"SqlServerLinkedService_source_connectionString": {
 			"value": ""
 		},
