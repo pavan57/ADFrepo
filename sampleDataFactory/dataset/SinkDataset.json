@@ -5,11 +5,22 @@
 			"referenceName": "AzureSqlDatabaseLinkedService_Sink",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"SinkTableName": {
+				"type": "string"
+			}
+		},
 		"folder": {
 			"name": "MultiTable_IncrementalLoad"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
-		"schema": []
+		"schema": [],
+		"typeProperties": {
+			"table": {
+				"value": "@dataset().SinkTableName",
+				"type": "Expression"
+			}
+		}
 	}
 }
