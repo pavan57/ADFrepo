@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "LookupTableList1",
+				"name": "LookupTableList",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -26,6 +26,26 @@
 						"type": "DatasetReference"
 					},
 					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "TriggerCopy",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "LookupTableList",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "IterateAndCopySQLTables",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": false
 				}
 			}
 		],
