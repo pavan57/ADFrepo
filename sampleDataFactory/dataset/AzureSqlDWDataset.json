@@ -5,11 +5,29 @@
 			"referenceName": "AzureSqlDWLinkedService",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"DWTableName": {
+				"type": "string"
+			},
+			"DWSchema": {
+				"type": "string"
+			}
+		},
 		"folder": {
 			"name": "MutipletableLoad"
 		},
 		"annotations": [],
 		"type": "AzureSqlDWTable",
-		"schema": []
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().DWSchema",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().DWTableName",
+				"type": "Expression"
+			}
+		}
 	}
 }
