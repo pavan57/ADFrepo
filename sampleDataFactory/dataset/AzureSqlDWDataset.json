@@ -1,0 +1,15 @@
+{
+	"name": "AzureSqlDWDataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDWLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "MutipletableLoad"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": []
+	}
+}
