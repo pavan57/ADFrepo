@@ -1,0 +1,15 @@
+{
+	"name": "AzureSqlDatabaseDatase",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabaseLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "MutipletableLoad"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
