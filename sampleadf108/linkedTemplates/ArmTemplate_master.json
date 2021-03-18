@@ -7,13 +7,25 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "sampleadf108"
 		},
-		"sqlServerLinkedService_Source_connectionString": {
+		"AzureSqlDWLinkedService_connectionString": {
 			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'sqlServerLinkedService_Source'"
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDWLinkedService'"
+		},
+		"AzureSqlDatabaseLinkedService_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabaseLinkedService'"
 		},
 		"AzureSqlDatabaseLinkedService_Sink_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabaseLinkedService_Sink'"
+		},
+		"sqlServerLinkedService_Source_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'sqlServerLinkedService_Source'"
+		},
+		"AzureStorageLinkedService_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureStorageLinkedService'"
 		},
 		"containerUri": {
 			"type": "string",
@@ -42,11 +54,20 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
-					"sqlServerLinkedService_Source_connectionString": {
-						"value": "[parameters('sqlServerLinkedService_Source_connectionString')]"
+					"AzureSqlDWLinkedService_connectionString": {
+						"value": "[parameters('AzureSqlDWLinkedService_connectionString')]"
+					},
+					"AzureSqlDatabaseLinkedService_connectionString": {
+						"value": "[parameters('AzureSqlDatabaseLinkedService_connectionString')]"
 					},
 					"AzureSqlDatabaseLinkedService_Sink_connectionString": {
 						"value": "[parameters('AzureSqlDatabaseLinkedService_Sink_connectionString')]"
+					},
+					"sqlServerLinkedService_Source_connectionString": {
+						"value": "[parameters('sqlServerLinkedService_Source_connectionString')]"
+					},
+					"AzureStorageLinkedService_connectionString": {
+						"value": "[parameters('AzureStorageLinkedService_connectionString')]"
 					}
 				}
 			},
