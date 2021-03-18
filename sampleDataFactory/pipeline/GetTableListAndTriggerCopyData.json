@@ -1,0 +1,9 @@
+{
+	"name": "GetTableListAndTriggerCopyData",
+	"properties": {
+		"folder": {
+			"name": "Multi_Table_Copy"
+		},
+		"annotations": []
+	}
+}
