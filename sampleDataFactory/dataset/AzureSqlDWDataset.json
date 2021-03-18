@@ -14,7 +14,7 @@
 			}
 		},
 		"folder": {
-			"name": "MutipletableLoad"
+			"name": "Muti_Table_Copy_Dataset"
 		},
 		"annotations": [],
 		"type": "AzureSqlDWTable",

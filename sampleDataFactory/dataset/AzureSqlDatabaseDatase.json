@@ -6,7 +6,7 @@
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "MutipletableLoad"
+			"name": "Muti_Table_Copy_Dataset"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
