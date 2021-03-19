@@ -39,7 +39,7 @@
 								"sink": {
 									"type": "SqlDWSink",
 									"preCopyScript": {
-										"value": "SET IDENTITY_INSERT [@{item().TABLE_SCHEMA}].[@{item().TABLE_NAME}] ON\nGO\nTRUNCATE TABLE [@{item().TABLE_SCHEMA}].[@{item().TABLE_NAME}]",
+										"value": "SET IDENTITY_INSERT [@{item().TABLE_SCHEMA}].[@{item().TABLE_NAME}] ON;\nTRUNCATE TABLE [@{item().TABLE_SCHEMA}].[@{item().TABLE_NAME}]",
 										"type": "Expression"
 									},
 									"allowPolyBase": true,
