@@ -14,10 +14,10 @@
 		"AzureSqlDatabaseLinkedService_Sink_connectionString": {
 			"value": ""
 		},
-		"sqlServerLinkedService_Source_connectionString": {
+		"AzureStorageLinkedService_connectionString": {
 			"value": ""
 		},
-		"AzureStorageLinkedService_connectionString": {
+		"sqlServerLinkedService_Source_connectionString": {
 			"value": ""
 		},
 		"containerUri": {

@@ -19,19 +19,89 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabaseLinkedService_Sink'"
 		},
-		"sqlServerLinkedService_Source_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'sqlServerLinkedService_Source'"
-		},
 		"AzureStorageLinkedService_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureStorageLinkedService'"
+		},
+		"sqlServerLinkedService_Source_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'sqlServerLinkedService_Source'"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/GetTableListAndTriggerCopyData')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "LookupTableList",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "SELECT TABLE_SCHEMA, TABLE_NAME FROM information_schema.TABLES \nWHERE TABLE_TYPE = 'BASE TABLE' and TABLE_SCHEMA = 'SalesLT' and TABLE_NAME IN ('Address', 'Customer', 'CustomerAddress')",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "AzureSqlDatabaseDatase",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "TriggerCopy",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "LookupTableList",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "IterateAndCopySQLTables",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": false,
+							"parameters": {
+								"tableList": {
+									"value": "@activity('LookupTableList').output.value",
+									"type": "Expression"
+								}
+							}
+						}
+					}
+				],
+				"folder": {
+					"name": "Multi_Table_Copy"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AzureSqlDatabaseDatase')]",
+				"[concat(variables('factoryId'), '/pipelines/IterateAndCopySQLTables')]"
+			]
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/IncrementalCopyPipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
@@ -247,6 +317,171 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/IterateAndCopySQLTables')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "IterateSQLTables",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@pipeline().parameters.tableList",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderQuery": {
+												"value": "SELECT * FROM [@{item().TABLE_SCHEMA}].[@{item().TABLE_NAME}]",
+												"type": "Expression"
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "SqlDWSink",
+											"preCopyScript": {
+												"value": "TRUNCATE TABLE [@{item().TABLE_SCHEMA}].[@{item().TABLE_NAME}]",
+												"type": "Expression"
+											},
+											"allowPolyBase": true,
+											"polyBaseSettings": {
+												"rejectValue": 0,
+												"rejectType": "value",
+												"useTypeDefault": false
+											},
+											"disableMetricsCollection": false
+										},
+										"enableStaging": true,
+										"stagingSettings": {
+											"linkedServiceName": {
+												"referenceName": "AzureStorageLinkedService",
+												"type": "LinkedServiceReference"
+											},
+											"path": "mycontainer108/NewDirectory1"
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "AzureSqlDatabaseDatase",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "AzureSqlDWDataset",
+											"type": "DatasetReference",
+											"parameters": {
+												"DWTableName": {
+													"value": "@item().TABLE_NAME",
+													"type": "Expression"
+												},
+												"DWSchema": {
+													"value": "@item().TABLE_SCHEMA",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"parameters": {
+					"tableList": {
+						"type": "array"
+					}
+				},
+				"folder": {
+					"name": "Multi_Table_Copy"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AzureSqlDatabaseDatase')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlDWDataset')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureStorageLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlDWDataset')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDWLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"DWTableName": {
+						"type": "string"
+					},
+					"DWSchema": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Muti_Table_Copy_Dataset"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().DWSchema",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().DWTableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDWLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabaseDatase')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabaseLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Muti_Table_Copy_Dataset"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabaseLinkedService')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SinkDataset')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -352,20 +587,6 @@
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"parameters": {
-					"azuresql-servername": {
-						"type": "string"
-					},
-					"azuresql-username": {
-						"type": "string"
-					},
-					"azuresql-pass": {
-						"type": "string"
-					},
-					"azuresql-dbname": {
-						"type": "string"
-					}
-				},
 				"annotations": [],
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
@@ -388,19 +609,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/sqlServerLinkedService_Source')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('sqlServerLinkedService_Source_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/AzureStorageLinkedService')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -414,234 +622,17 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabaseDatase')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
+			"name": "[concat(parameters('factoryName'), '/sqlServerLinkedService_Source')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDatabaseLinkedService",
-					"type": "LinkedServiceReference",
-					"parameters": {}
-				},
-				"folder": {
-					"name": "Muti_Table_Copy_Dataset"
-				},
 				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabaseLinkedService')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureSqlDWDataset')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDWLinkedService",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"DWTableName": {
-						"type": "string"
-					},
-					"DWSchema": {
-						"type": "string"
-					}
-				},
-				"folder": {
-					"name": "Muti_Table_Copy_Dataset"
-				},
-				"annotations": [],
-				"type": "AzureSqlDWTable",
-				"schema": [],
+				"type": "AzureSqlDatabase",
 				"typeProperties": {
-					"schema": {
-						"value": "@dataset().DWSchema",
-						"type": "Expression"
-					},
-					"table": {
-						"value": "@dataset().DWTableName",
-						"type": "Expression"
-					}
+					"connectionString": "[parameters('sqlServerLinkedService_Source_connectionString')]"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDWLinkedService')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/IterateAndCopySQLTables')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "IterateSQLTables",
-						"type": "ForEach",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@pipeline().parameters.tableList",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "Copy data1",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "AzureSqlSource",
-											"sqlReaderQuery": "SELECT * FROM [@{item().TABLE_SCHEMA}].[@{item().TABLE_NAME}]",
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"sink": {
-											"type": "SqlDWSink",
-											"preCopyScript": {
-												"value": "TRUNCATE TABLE [@{item().TABLE_SCHEMA}].[@{item().TABLE_NAME}]",
-												"type": "Expression"
-											},
-											"allowPolyBase": true,
-											"polyBaseSettings": {
-												"rejectValue": 0,
-												"rejectType": "value",
-												"useTypeDefault": false
-											},
-											"disableMetricsCollection": false
-										},
-										"enableStaging": true,
-										"stagingSettings": {
-											"linkedServiceName": {
-												"referenceName": "AzureStorageLinkedService",
-												"type": "LinkedServiceReference"
-											},
-											"path": "mycontainer108/NewDirectory1"
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "AzureSqlDatabaseDatase",
-											"type": "DatasetReference",
-											"parameters": {}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "AzureSqlDWDataset",
-											"type": "DatasetReference",
-											"parameters": {
-												"DWTableName": {
-													"value": "@item().TABLE_NAME",
-													"type": "Expression"
-												},
-												"DWSchema": {
-													"value": "@item().TABLE_SCHEMA",
-													"type": "Expression"
-												}
-											}
-										}
-									]
-								}
-							]
-						}
-					}
-				],
-				"parameters": {
-					"tableList": {
-						"type": "array"
-					}
-				},
-				"folder": {
-					"name": "Multi_Table_Copy"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/AzureSqlDatabaseDatase')]",
-				"[concat(variables('factoryId'), '/datasets/AzureSqlDWDataset')]",
-				"[concat(variables('factoryId'), '/linkedServices/AzureStorageLinkedService')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/GetTableListAndTriggerCopyData')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "LookupTableList",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "SELECT TABLE_SCHEMA, TABLE_NAME FROM information_schema.TABLES \nWHERE TABLE_TYPE = 'BASE TABLE' and TABLE_SCHEMA = 'SalesLT' and TABLE_NAME <> 'ProductModel'",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "AzureSqlDatabaseDatase",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "TriggerCopy",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "LookupTableList",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "IterateAndCopySQLTables",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": false,
-							"parameters": {
-								"tableList": "@activity('LookupTableList').output.value"
-							}
-						}
-					}
-				],
-				"folder": {
-					"name": "Multi_Table_Copy"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/AzureSqlDatabaseDatase')]",
-				"[concat(variables('factoryId'), '/pipelines/IterateAndCopySQLTables')]"
-			]
+			"dependsOn": []
 		}
 	]
 }

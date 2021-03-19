@@ -19,13 +19,13 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabaseLinkedService_Sink'"
 		},
-		"sqlServerLinkedService_Source_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'sqlServerLinkedService_Source'"
-		},
 		"AzureStorageLinkedService_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureStorageLinkedService'"
+		},
+		"sqlServerLinkedService_Source_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'sqlServerLinkedService_Source'"
 		},
 		"containerUri": {
 			"type": "string",
@@ -63,11 +63,11 @@
 					"AzureSqlDatabaseLinkedService_Sink_connectionString": {
 						"value": "[parameters('AzureSqlDatabaseLinkedService_Sink_connectionString')]"
 					},
-					"sqlServerLinkedService_Source_connectionString": {
-						"value": "[parameters('sqlServerLinkedService_Source_connectionString')]"
-					},
 					"AzureStorageLinkedService_connectionString": {
 						"value": "[parameters('AzureStorageLinkedService_connectionString')]"
+					},
+					"sqlServerLinkedService_Source_connectionString": {
+						"value": "[parameters('sqlServerLinkedService_Source_connectionString')]"
 					}
 				}
 			},
