@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT TABLE_SCHEMA, TABLE_NAME FROM information_schema.TABLES \nWHERE TABLE_TYPE = 'BASE TABLE' and TABLE_SCHEMA = 'SalesLT' and TABLE_NAME <> 'ProductModel'",
+						"sqlReaderQuery": "SELECT TABLE_SCHEMA, TABLE_NAME FROM information_schema.TABLES \nWHERE TABLE_TYPE = 'BASE TABLE' and TABLE_SCHEMA = 'SalesLT' and TABLE_NAME IN ('Address', 'Customer', 'CustomerAddress')",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -47,7 +47,10 @@
 					},
 					"waitOnCompletion": false,
 					"parameters": {
-						"tableList": "@activity('LookupTableList').output.value"
+						"tableList": {
+							"value": "@activity('LookupTableList').output.value",
+							"type": "Expression"
+						}
 					}
 				}
 			}
