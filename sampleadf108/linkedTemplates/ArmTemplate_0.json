@@ -474,6 +474,7 @@
 								"value": "@pipeline().parameters.tableList",
 								"type": "Expression"
 							},
+							"isSequential": true,
 							"activities": [
 								{
 									"name": "Copy data1",
