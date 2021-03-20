@@ -57,7 +57,7 @@
 										"referenceName": "AzureStorageLinkedService",
 										"type": "LinkedServiceReference"
 									},
-									"path": "mycontainer108/NewDirectory1"
+									"path": "mycontainer108"
 								}
 							},
 							"inputs": [
