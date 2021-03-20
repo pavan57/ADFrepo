@@ -368,6 +368,7 @@
 												"rejectType": "value",
 												"useTypeDefault": false
 											},
+											"tableOption": "autoCreate",
 											"disableMetricsCollection": false
 										},
 										"enableStaging": true,
