@@ -14,11 +14,11 @@
 		"AzureSqlDatabaseLinkedService_Sink_connectionString": {
 			"value": ""
 		},
-		"AzureStorageLinkedService_connectionString": {
-			"value": ""
-		},
 		"sqlServerLinkedService_Source_connectionString": {
 			"value": ""
+		},
+		"AzureStorageLinkedService_properties_typeProperties_serviceEndpoint": {
+			"value": "https://datalakegen2storage108.blob.core.windows.net"
 		}
 	}
 }
